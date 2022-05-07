@@ -16,9 +16,23 @@ namespace WebApi.Controllers
             _context = new CourseWork_PlumbingStoreContext();
         }
 
-        public IEnumerable<PurchaseOrder> Get()
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrders(int employeeID)
         {
-            return _context.PurchaseOrders.ToArray();
+            if (employeeID < 1)
+            {
+                return BadRequest("Invalid employee ID");
+            }
+
+            try
+            {
+                var orders = _context.PurchaseOrders.Where(order => order.EmployeeId == employeeID).Select(x => x).ToList();
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using WebApi.Controllers;
+using WebApi.DTOs;
 
 namespace WebApi.Models
 {
@@ -34,6 +36,7 @@ namespace WebApi.Models
         public virtual DbSet<SupplyOrderProduct> SupplyOrderProducts { get; set; } = null!;
         public virtual DbSet<SupplyOrderState> SupplyOrderStates { get; set; } = null!;
         public virtual DbSet<UnitOfMeasurement> UnitOfMeasurements { get; set; } = null!;
+        public DbSet<ShopStorageProduct> ShopStorageProducts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

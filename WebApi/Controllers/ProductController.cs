@@ -3,8 +3,8 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-    [ApiController]
-    [Route("api/products")]
+    //[ApiController]
+    //[Route("api/products")]
     public class ProductController : ControllerBase
     {
         private readonly ILogger<ProductController> _logger;
