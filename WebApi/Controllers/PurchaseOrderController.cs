@@ -3,8 +3,8 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-    //[ApiController]
-    //[Route("api/purchaseOrders")]
+    [ApiController]
+    [Route("api/purchaseOrders")]
     public class PurchaseOrderController : ControllerBase
     {
         private readonly ILogger<PurchaseOrderController> _logger;
@@ -33,6 +33,15 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<int>> CreatePurchaseOrder()
+        {
+            //bodyStream.BaseStream.Seek(0, SeekOrigin.Begin);
+            //var bodyText = bodyStream.ReadToEnd();
+            //var input = Newtonsoft.Json.JsonConvert.DeserializeObject<PurchaseOrder>(order);
+            return Ok();
         }
     }
 }

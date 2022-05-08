@@ -3,7 +3,7 @@
 namespace WebApi.DTOs
 {
     [Keyless]
-    public class ShopStorageProduct
+    public class ShopStorageProductDTO
     {
         public int ProductID { get; set; }
         public string Title { get; set; }

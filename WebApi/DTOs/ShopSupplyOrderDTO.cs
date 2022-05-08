@@ -3,7 +3,7 @@
 namespace WebApi.DTOs
 {
     [Keyless]
-    public class ShopSupplyOrder
+    public class ShopSupplyOrderDTO
     {
 
     }

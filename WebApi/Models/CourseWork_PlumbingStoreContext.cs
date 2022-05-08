@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using WebApi.Controllers;
 using WebApi.DTOs;
 
 namespace WebApi.Models
@@ -22,6 +21,7 @@ namespace WebApi.Models
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Employee> Employees { get; set; } = null!;
         public virtual DbSet<EmployeeType> EmployeeTypes { get; set; } = null!;
+        public virtual DbSet<FullProductInfo> FullProductInfos { get; set; } = null!;
         public virtual DbSet<LoginDatum> LoginData { get; set; } = null!;
         public virtual DbSet<PersonalDatum> PersonalData { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
@@ -36,7 +36,7 @@ namespace WebApi.Models
         public virtual DbSet<SupplyOrderProduct> SupplyOrderProducts { get; set; } = null!;
         public virtual DbSet<SupplyOrderState> SupplyOrderStates { get; set; } = null!;
         public virtual DbSet<UnitOfMeasurement> UnitOfMeasurements { get; set; } = null!;
-        public DbSet<ShopStorageProduct> ShopStorageProducts { get; set; }
+        public DbSet<ShopStorageProductDTO> ShopStorageProducts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -101,28 +101,55 @@ namespace WebApi.Models
                 entity.Property(e => e.Title).HasMaxLength(20);
             });
 
-            modelBuilder.Entity<LoginDatum>(entity =>
+            modelBuilder.Entity<FullProductInfo>(entity =>
             {
                 entity.HasNoKey();
 
-                entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+                entity.ToView("FullProductInfo");
+
+                entity.Property(e => e.Brand).HasMaxLength(50);
+
+                entity.Property(e => e.Category).HasMaxLength(50);
+
+                entity.Property(e => e.Description).HasMaxLength(200);
+
+                entity.Property(e => e.Price).HasColumnType("money");
+
+                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+                entity.Property(e => e.Subcategory).HasMaxLength(50);
+
+                entity.Property(e => e.Title).HasMaxLength(50);
+
+                entity.Property(e => e.UnitOfMeasurement).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<LoginDatum>(entity =>
+            {
+                entity.HasKey(e => e.EmployeeId);
+
+                entity.Property(e => e.EmployeeId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("EmployeeID");
 
                 entity.Property(e => e.LoginName).HasMaxLength(50);
 
                 entity.Property(e => e.Password).HasMaxLength(50);
 
                 entity.HasOne(d => d.Employee)
-                    .WithMany()
-                    .HasForeignKey(d => d.EmployeeId)
+                    .WithOne(p => p.LoginDatum)
+                    .HasForeignKey<LoginDatum>(d => d.EmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__LoginData__Emplo__4222D4EF");
             });
 
             modelBuilder.Entity<PersonalDatum>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.EmployeeId);
 
-                entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+                entity.Property(e => e.EmployeeId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("EmployeeID");
 
                 entity.Property(e => e.FirstName).HasMaxLength(30);
 
@@ -131,8 +158,8 @@ namespace WebApi.Models
                 entity.Property(e => e.PhoneNumber).HasMaxLength(13);
 
                 entity.HasOne(d => d.Employee)
-                    .WithMany()
-                    .HasForeignKey(d => d.EmployeeId)
+                    .WithOne(p => p.PersonalDatum)
+                    .HasForeignKey<PersonalDatum>(d => d.EmployeeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__PersonalD__Emplo__440B1D61");
             });
