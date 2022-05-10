@@ -8,6 +8,7 @@ namespace WebApi.Models
         public Product()
         {
             PurchaseOrderProducts = new HashSet<PurchaseOrderProduct>();
+            StorageProducts = new HashSet<StorageProduct>();
             SupplyOrderProducts = new HashSet<SupplyOrderProduct>();
         }
 
@@ -23,6 +24,7 @@ namespace WebApi.Models
         public virtual Subcategory? Subcategory { get; set; }
         public virtual UnitOfMeasurement? UnitOfMeasurement { get; set; }
         public virtual ICollection<PurchaseOrderProduct> PurchaseOrderProducts { get; set; }
+        public virtual ICollection<StorageProduct> StorageProducts { get; set; }
         public virtual ICollection<SupplyOrderProduct> SupplyOrderProducts { get; set; }
     }
 }

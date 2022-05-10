@@ -232,7 +232,6 @@ namespace WebApi.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.PurchaseOrderProducts)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__PurchaseO__Produ__49C3F6B7");
 
                 entity.HasOne(d => d.PurchaseOrder)
@@ -268,22 +267,25 @@ namespace WebApi.Models
 
             modelBuilder.Entity<StorageProduct>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.StorageId, e.ProductId })
+                    .HasName("PK__StorageP__4164B259AFA9DBFF");
 
                 entity.ToTable("StorageProduct");
 
-                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+                entity.HasIndex(e => e.Quantity, "IX_StorageProduct")
+                    .IsUnique();
 
                 entity.Property(e => e.StorageId).HasColumnName("StorageID");
 
+                entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
                 entity.HasOne(d => d.Product)
-                    .WithMany()
+                    .WithMany(p => p.StorageProducts)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__StoragePr__Produ__37A5467C");
 
                 entity.HasOne(d => d.Storage)
-                    .WithMany()
+                    .WithMany(p => p.StorageProducts)
                     .HasForeignKey(d => d.StorageId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__StoragePr__Stora__36B12243");
@@ -375,7 +377,6 @@ namespace WebApi.Models
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.SupplyOrderProducts)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__SupplyOrd__Produ__52593CB8");
 
                 entity.HasOne(d => d.SupplyOrder)
