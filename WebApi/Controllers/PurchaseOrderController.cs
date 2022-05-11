@@ -31,7 +31,13 @@ namespace WebApi.Controllers
 
             try
             {
-                var orders = _context.PurchaseOrders.Where(order => order.EmployeeId == employeeID).Select(x => x).ToList();
+                var orders = _context.PurchaseOrders
+                    .Where(order => order.EmployeeId == employeeID)
+                    .Select(x => x)
+                    .Include(x => x.PurchaseOrderProducts)
+                        .ThenInclude(x => x.Product)
+                            .ThenInclude(x => x.UnitOfMeasurement)
+                    .ToList();
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -41,7 +47,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> CreatePurchaseOrder(PurchaseOrderDTO purchaseOrderDTO)
+        public async Task<IActionResult> CreatePurchaseOrder(PurchaseOrderDTO purchaseOrderDTO)
         {
             using var transaction = _context.Database.BeginTransaction();
             var purchaseOrder = _mapper.Map<PurchaseOrderDTO, PurchaseOrder>(purchaseOrderDTO);
@@ -78,7 +84,7 @@ namespace WebApi.Controllers
                     _context.Database.ExecuteSqlRaw($"UPDATE StorageProduct SET Quantity = {stockItem.Quantity - purchProd.Quantity} " +
                         $"WHERE StorageID = {stockItem.StorageId} AND ProductID = {stockItem.ProductId}");
 
-                    _context.PurchaseOrderProducts.Add(purchProd);
+                    //_context.PurchaseOrderProducts.Add(purchProd);
                 }
                 _context.SaveChanges();
 

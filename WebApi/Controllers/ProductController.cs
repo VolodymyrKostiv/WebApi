@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-    //[ApiController]
-    //[Route("api/products")]
+    [ApiController]
+    [Route("api/products")]
     public class ProductController : ControllerBase
     {
         private readonly ILogger<ProductController> _logger;
@@ -17,9 +18,10 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Product> Get()
+        public async Task<IActionResult> GetAllProducts()
         {
-            return _context.Products.ToArray();
+            var res = await _context.FullProductInfos.ToListAsync();
+            return Ok(res);
         }
     }
 }
