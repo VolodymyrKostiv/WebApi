@@ -3,8 +3,8 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-    //[ApiController]
-    //[Route("[controller]")]
+    [ApiController]
+    [Route("api/brands")]
     public class BrandController : ControllerBase
     {
         private readonly ILogger<BrandController> _logger;
@@ -16,10 +16,22 @@ namespace WebApi.Controllers
             _context = new CourseWork_PlumbingStoreContext();
         }
 
-        [HttpGet(Name = "GetBrand")]
-        public IEnumerable<Brand> Get()
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBrand(int id)
         {
-            return _context.Brands.ToArray();
+            var res = _context.Brands.Where(x => x.BrandId == id).FirstOrDefault();
+
+            _context.Brands.Remove(res);    
+            _context.SaveChanges();
+
+            return Ok(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBrands()
+        {
+            var res = _context.Brands.ToArray();
+            return Ok(res);
         }
     }
 }

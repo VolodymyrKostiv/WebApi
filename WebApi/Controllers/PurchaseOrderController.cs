@@ -36,7 +36,6 @@ namespace WebApi.Controllers
                     .Select(x => x)
                     .Include(x => x.PurchaseOrderProducts)
                         .ThenInclude(x => x.Product)
-                            .ThenInclude(x => x.UnitOfMeasurement)
                     .ToList();
                 return Ok(orders);
             }
@@ -44,6 +43,27 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeletePurchaseOrder(int orderID)
+        {
+            var order = _context.PurchaseOrders.Find(orderID);
+            if (order == null)
+                return NotFound();
+
+            var orderProducts = _context.PurchaseOrderProducts.Where(x => x.PurchaseOrderId == order.PurchaseOrderId).ToList();
+
+            foreach (var product in orderProducts)
+            {
+                _context.PurchaseOrderProducts.Remove(product);
+            }
+
+            _context.PurchaseOrders.Remove(order);
+
+            _context.SaveChanges();
+
+            return Ok(order);
         }
 
         [HttpPost]

@@ -41,17 +41,6 @@ namespace WebApi.Controllers
 
                 _context.SupplyOrders.Add(supplyOrder);
 
-                //_context.Entry(supplyOrder.SupplyOrderState).State = EntityState.Unchanged;
-                //_context.Entry(supplyOrder.Employee).State = EntityState.Unchanged;
-                //_context.Entry(supplyOrder.Supplier).State = EntityState.Unchanged;
-
-                //_context.SaveChanges();
-                //foreach (var supplyOrderProd in supplyOrder.SupplyOrderProducts)
-                //{
-                //    supplyOrderProd.SupplyOrderId = supplyOrder.SupplyOrderId;
-
-                //    _context.SupplyOrderProducts.Add(supplyOrderProd);
-                //}
                 _context.SaveChanges();
             }
             catch (Exception ex)
@@ -61,6 +50,37 @@ namespace WebApi.Controllers
             }
 
             return Ok(supplyOrder);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteSupplyOrder(int supplyOrderId)
+        {
+            var order = _context.SupplyOrders.Find(supplyOrderId);
+            if (order == null)
+                return NotFound();
+
+            var orderProduct = _context.SupplyOrderProducts.Where(x => x.SupplyOrderId == order.SupplyOrderId).ToList();
+
+            foreach (var product in orderProduct)
+            {
+                _context.SupplyOrderProducts.Remove(product);
+            }
+
+            _context.SupplyOrders.Remove(order);
+            
+            _context.SaveChanges();
+
+            return Ok(order);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutSupplyOrder(SupplyOrderStateChangedDTO supplyOrder)
+        {
+            var order = await _context.SupplyOrders.Where(x => x.SupplyOrderId == supplyOrder.SupplyOrderId).FirstOrDefaultAsync();
+            order.SupplyOrderStateId = supplyOrder.SupplyOrderStateId;
+            _context.SupplyOrders.Update(order);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [HttpGet]
@@ -78,7 +98,6 @@ namespace WebApi.Controllers
                     .Include(x => x.Supplier)
                     .Include(x => x.SupplyOrderProducts)
                         .ThenInclude(y => y.Product)
-                            .ThenInclude(y => y.UnitOfMeasurement)
                     .Include(x => x.SupplyOrderState)
                     .ToList();          
 
